@@ -51,6 +51,8 @@ namespace Microsoft.Maui.Handlers
 			platformView.ShouldChangeText += OnShouldChangeText;
 			platformView.Started += OnStarted;
 			platformView.Ended += OnEnded;
+			// register to native notitications
+			RegisterToNotifications(platformView);
 			platformView.TextSetOrChanged += OnTextPropertySet;
 		}
 
@@ -65,6 +67,15 @@ namespace Microsoft.Maui.Handlers
 				platformView.SelectionChanged -= OnSelectionChanged;
 
 			_set = false;
+		}
+
+		protected override void OnNativeViewChanged (NSNotification notification)
+		{
+			switch(notification.Name) {
+			case MauiTextView.TextSetOrChangedNotification:
+				OnTextPropertySet(notification.Object, EventArgs.Empty);
+				break;
+			}
 		}
 
 		public override Size GetDesiredSize(double widthConstraint, double heightConstraint)
